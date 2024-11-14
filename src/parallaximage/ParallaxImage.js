@@ -1,10 +1,10 @@
 // Parallax effect inspired by https://github.com/oblador/react-native-parallax/
 
-import React, { Component } from 'react';
+import React, { Component, useRef } from 'react';
 import { View,  Image, Animated, Easing, ActivityIndicator, findNodeHandle } from 'react-native';
 import styles from './ParallaxImage.style';
 
-export default class ParallaxImage extends Component {
+class ParallaxImageClass extends Component {
 
 
 
@@ -32,7 +32,7 @@ export default class ParallaxImage extends Component {
     }
 
     setNativeProps (nativeProps) {
-        this._container.setNativeProps(nativeProps);
+        this.props._container.current.setNativeProps(nativeProps);
     }
 
     componentDidMount () {
@@ -48,7 +48,7 @@ export default class ParallaxImage extends Component {
     }
 
     _measureLayout () {
-        if (this._container) {
+        if (this.props._container.current) {
             const {
                 dimensions,
                 vertical,
@@ -60,7 +60,7 @@ export default class ParallaxImage extends Component {
             } = this.props;
 
             if (carouselRef) {
-                this._container.measureLayout(
+                this.props._container.current.measureLayout(
                     findNodeHandle(carouselRef),
                     (x, y, width, height, pageX, pageY) => {
                         const offset = vertical ?
@@ -186,7 +186,7 @@ export default class ParallaxImage extends Component {
 
         return (
             <View
-              ref={(c) => { this._container = c; }}
+              ref={this.props._container}
               pointerEvents={'none'}
               style={[containerStyle, styles.container]}
               onLayout={this._measureLayout}
@@ -196,4 +196,10 @@ export default class ParallaxImage extends Component {
             </View>
         );
     }
+}
+
+export default function ParallaxImage(props){
+    const ref = useRef();
+
+    return <ParallaxImageClass {...props} _container={ref} />
 }
